@@ -1,0 +1,54 @@
+# Destroys AWS environemt built, uses Terrafrom file to execute
+
+name: 'Terraform Destroy'
+
+on:
+  workflow_dispatch: 
+    inputs: 
+        environment: 
+            description: 'Target environment'
+            required : true
+            default: "production"
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Setup AWS credential using serctet in git action
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: '${{ secrets.TF_USER_AWS_KEY }}'
+        aws-secret-access-key: '${{ secrets.TF_USER_AWS_SECRET }}'
+        aws-region: us-east-2
+
+  #Install terrafrom       
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+
+    # Destroys AWS environment built
+    - name: Terraform Apply
+      run: terraform destroy -auto-approve -input=false

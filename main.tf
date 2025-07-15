@@ -9,7 +9,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region     = "us-east-2"
+  region = "us-east-2"
 }
 # Create a VPC
 resource "aws_vpc" "project1" {
@@ -20,7 +20,7 @@ data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
-    name   = "project1"
+    name   = "project1.1"
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 
@@ -37,7 +37,7 @@ resource "aws_instance" "test" {
   instance_type = "t3.micro"
 
   tags = {
-    Name = "HelloWorld"
+    Name = "Project1"
   }
 }
 
